@@ -1,0 +1,14 @@
+<Context>
+
+    <Resource name="jdbc/cs" maxWaitMillis="5000" maxTotal="20" password="d_test"
+              url="jdbc:mysql://mysql:3306/d_test?useUnicode=true&amp;characterEncoding=utf8&amp;useServerPrepStmts=false&amp;autoReconnect=true"
+              type="javax.sql.DataSource"
+              driverClassName="com.mysql.jdbc.Driver" maxIdle="10"
+              username="d_test" validationQuery="select 1"/>
+
+    <!--保存项目的git目录-->
+    <Parameter name="project.home" value="/var/projects"/>
+    <!--系统的可访问URL-->
+    <Parameter name="url" value="http://localhost"/>
+
+</Context>

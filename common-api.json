@@ -1,0 +1,673 @@
+{
+  "swagger": "2.0-with-api-mocker-1.0",
+  "info": {
+    "title": "项目管理",
+    "version": "1.0.0-SNAPSHOT"
+  },
+  "tags": [
+    {
+      "name": "sync",
+      "description": "同步相关"
+    },
+    {
+      "name": "login",
+      "description": "登录相关"
+    }
+  ],
+  "paths": {
+    "/projectBranches/{id}": {
+      "post": {
+        "summary": "从特定建立新分支，并且获取该分支的api yaml",
+        "description": "新建分支",
+        "tags": [
+          "sync"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "from",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "from": {
+                  "type": "string",
+                  "description": "来源分支名称"
+                },
+                "to": {
+                  "type": "string",
+                  "description": "新分支名称"
+                }
+              },
+              "required": [
+                "from",
+                "to"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功就是成功"
+          }
+        }
+      },
+      "get": {
+        "summary": "获取某个项目所有的分支",
+        "description": "所有分支",
+        "tags": [
+          "sync"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "基于分支的array",
+            "hold": {
+              "title": "稍微休息一会儿"
+            },
+            "schema": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projectApiJson/{id}/{branch}": {
+      "get": {
+        "summary": "获取项目某个分支的api json",
+        "description": "json",
+        "tags": [
+          "sync"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "branch",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "swagger": {
+                  "type": "string",
+                  "description": "mock swagger",
+                  "default": "mock"
+                }
+              },
+              "required": [
+                "swagger"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "/watchProjectApi/{id}/{branch}": {
+      "get": {
+        "schemes": [
+          "ws"
+        ],
+        "summary": "webSocket watch",
+        "description": "webSocket",
+        "tags": [
+          "sync"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "branch",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string",
+              "default": "lastCommitId"
+            }
+          }
+        }
+      }
+    },
+    "/projectApiYaml/{id}/{branch}": {
+      "put": {
+        "summary": "更新该项目分支的api yaml",
+        "description": "需要把所有内容",
+        "tags": [
+          "sync"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "branch",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "produces": [
+          "text/plain"
+        ],
+        "responses": {
+          "200": {
+            "description": "正常的结果",
+            "schema": {
+              "type": "string",
+              "description": "新的commit id",
+              "default": "newOne"
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "获取项目某个分支的api yaml",
+        "description": "基本上就是这个api的schema 所以mock无需赘述，前端收获的数据是含有mock字段的即认为来自mock服务器，渲染本json的yaml即可",
+        "tags": [
+          "sync"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "branch",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "commit id"
+                },
+                "yaml": {
+                  "type": "string",
+                  "description": "yaml api"
+                }
+              },
+              "required": [
+                "id",
+                "yaml"
+              ],
+              "default": {
+                "id": "null",
+                "yaml": "mock"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logout": {
+      "get": {
+        "summary": "执行登出",
+        "description": "登出",
+        "tags": [
+          "login"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "cookies": {
+              "name": {
+                "type": "string",
+                "default": {
+                  "__script": "null"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "执行登录",
+        "description": "登录完成之后应该获取跟loginStatus一样的响应；mock时用户名为error就登录失败",
+        "tags": [
+          "login"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded",
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "password",
+            "in": "formData",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "cookies": {
+              "name": {
+                "type": "string",
+                "default": {
+                  "__script": "username"
+                }
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/LoginStatus",
+              "properties": {
+                "loginName": {
+                  "default": {
+                    "__script": "username"
+                  }
+                }
+              }
+            }
+          },
+          "240": {
+            "description": "无效的登录",
+            "condition": {
+              "script": "username==='error'"
+            }
+          }
+        }
+      }
+    },
+    "/loginStatus": {
+      "get": {
+        "summary": "获取登录状态",
+        "description": "包含权限信息",
+        "tags": [
+          "login"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LoginStatus",
+              "properties": {
+                "loginName": {
+                  "default": {
+                    "__script": "__request.cookies.name"
+                  }
+                }
+              }
+            }
+          },
+          "240": {
+            "description": "无效的登录",
+            "condition": {
+              "script": "!__request.cookies.name"
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "delete": {
+        "summary": "新增用户",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/projects": {
+      "get": {
+        "summary": "",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "正常结果",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ProjectModel"
+              },
+              "minItems": 5
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "新增项目",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "新增的项目数据",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "id",
+                "description"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "avatar": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "添加成功"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "summary": "获取登录状态",
+        "description": "包含权限信息",
+        "parameters": [
+          {
+            "name": "current",
+            "in": "query",
+            "type": "number",
+            "required": false
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "type": "number",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "正常结果",
+            "schema": {
+              "type": "object",
+              "required": [
+                "list",
+                "pagination"
+              ],
+              "properties": {
+                "list": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/UserModel"
+                  },
+                  "maxItems": {
+                    "__script": "pageSize||20"
+                  },
+                  "minItems": {
+                    "__script": "pageSize||20"
+                  }
+                },
+                "pagination": {
+                  "type": "object",
+                  "required": [
+                    "current",
+                    "pageSize",
+                    "total"
+                  ],
+                  "properties": {
+                    "current": {
+                      "type": "integer",
+                      "description": "当前页数",
+                      "default": {
+                        "__script": "current?parseInt(current):1"
+                      }
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "description": "每页大小",
+                      "default": {
+                        "__script": "pageSize?parseInt(pageSize):20"
+                      }
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "总数据量",
+                      "default": 100000
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "新增用户",
+        "description": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "新增的用户数据",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "rawPassword",
+                "username",
+                "role"
+              ],
+              "properties": {
+                "username": {
+                  "type": "string"
+                },
+                "rawPassword": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "添加成功"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ProjectModel": {
+      "type": "object",
+      "required": [
+        "id",
+        "description",
+        "branch",
+        "editorUrl"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "项目id 英文数字以及-的组合",
+          "pattern": "[a-zA-Z0-9-]{3,}"
+        },
+        "description": {
+          "type": "string",
+          "description": "项目描述"
+        },
+        "branch": {
+          "type": "string",
+          "description": "默认分支",
+          "pattern": "[a-zA-Z0-9-]{3,}",
+          "default": "master"
+        },
+        "avatar": {
+          "type": "string",
+          "description": "可选的400*400 image url",
+          "default": "https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png"
+        },
+        "editorUrl": {
+          "type": "string",
+          "description": "编辑器地址",
+          "default": "http://www.baidu.com"
+        }
+      }
+    },
+    "UserModel": {
+      "type": "object",
+      "required": [
+        "id",
+        "username",
+        "role"
+      ],
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "用户主键"
+        },
+        "username": {
+          "type": "string",
+          "description": "用户登录名"
+        },
+        "role": {
+          "type": "string",
+          "description": "角色"
+        }
+      }
+    },
+    "ProjectAuthority": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "项目id"
+        },
+        "write": {
+          "type": "boolean",
+          "description": "是否可以写入"
+        },
+        "read": {
+          "type": "boolean",
+          "description": "是否可以读取"
+        }
+      }
+    },
+    "LoginStatus": {
+      "type": "object",
+      "properties": {
+        "loginName": {
+          "type": "string",
+          "description": "登录名"
+        },
+        "currentAuthority": {
+          "type": "string",
+          "description": "用户权限",
+          "default": "user"
+        },
+        "name": {
+          "type": "string",
+          "description": "昵称222",
+          "default": "Cai Jiang"
+        },
+        "avatar": {
+          "type": "string",
+          "description": "图标",
+          "default": "https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png"
+        },
+        "userId": {
+          "type": "number",
+          "description": "用户id",
+          "default": 1
+        },
+        "projectAuthorities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ProjectAuthority"
+          }
+        }
+      },
+      "required": [
+        "loginName",
+        "name",
+        "avatar",
+        "userId",
+        "currentAuthority"
+      ]
+    }
+  }
+}

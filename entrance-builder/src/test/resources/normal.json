@@ -1,0 +1,9 @@
+{
+  "name": "test_bl_0",
+  "apiServers": [
+    {
+      "host": "localhost",
+      "localApiFile": ""
+    }
+  ]
+}

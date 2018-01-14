@@ -1,0 +1,6 @@
+swagger: 2.0-with-api-mocker-1.0
+info:
+  title: 新增项目
+  version: 1.0.0-SNAPSHOT
+tags:
+paths:

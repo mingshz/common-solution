@@ -1,0 +1,66 @@
+#docker 综合服务描述符
+#通过 docker stack deploy --compose-file docker-compose-test.yml cs-test
+#即可开启完整的应用程序
+version: "3"
+services:
+#  cdn:
+#    image: nginx
+#    volumes:
+#      - cdn_data:/usr/share/nginx/html
+#    ports:
+#      - 8081:80
+#    networks:
+#      - webnet
+  mysql:
+    image: d.lmjia.cn:5443/mysql-alirds:0.1
+    environment:
+      - MYSQL_PASSWORD=d_test
+      - MYSQL_DATABASE=d_test
+      - MYSQL_USER=d_test
+    volumes:
+      - cs_db_data:/var/lib/mysql
+    networks:
+      - cs-net
+
+  server:
+    image: cs-server:latest
+    volumes:
+      - cs_projects_data:/var/projects
+      - ~/IdeaProjects/common-solution/wokingLogs:/usr/local/tomcat/logs
+#      - ~/cs_context.xml:/usr/local/tomcat/conf/Catalina/localhost/context.xml.default
+    networks:
+      - cs-net
+    deploy:
+    depends_on:
+      - mysql
+  editor:
+    image: d.lmjia.cn:5443/cs-api-editor:0.1
+    ports:
+      - 8080:8080
+    networks:
+      - cs-net
+
+  manager:
+    image: d.lmjia.cn:5443/cs-manager:0.1
+    networks:
+      - cs-net
+
+  proxy:
+    image: cs-proxy:latest
+    networks:
+      - cs-net
+    ports:
+      - 80:80
+    depends_on:
+      - server
+      - editor
+      - manager
+
+networks:
+  cs-net:
+
+volumes:
+  cs_projects_data: #项目git工作区
+  cs_db_data: #  数据库区域
+#  cdn_data:
+

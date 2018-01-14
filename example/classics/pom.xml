@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>example</groupId>
+    <artifactId>demo-builder</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <docker.push.registry>d.lmjia.cn:5443</docker.push.registry>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.ming.common.solution</groupId>
+                <artifactId>entrance-builder</artifactId>
+                <version>${project.version}</version>
+                <configuration>
+                    <apiServers>
+                        <server>
+                            <host>localhost</host>
+                            <localApiFile>simpleApi.json</localApiFile>
+                        </server>
+                    </apiServers>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>entrance.build</id>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>entrance.push</id>
+                        <goals>
+                            <goal>push</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

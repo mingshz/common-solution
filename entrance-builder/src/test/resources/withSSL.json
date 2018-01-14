@@ -1,0 +1,10 @@
+{
+  "name": "test_bl_2",
+  "ssl": true,
+  "apiServers": [
+    {
+      "host": "localhost",
+      "localApiFile": ""
+    }
+  ]
+}

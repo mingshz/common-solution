@@ -1,0 +1,15 @@
+{
+  "name": "test_bl_1",
+  "apiServers": [
+    {
+      "host": "localhost",
+      "localApiFile": ""
+    }
+  ],
+  "staticServers": [
+    {
+      "locationUri": "/editor",
+      "host": "new"
+    }
+  ]
+}
