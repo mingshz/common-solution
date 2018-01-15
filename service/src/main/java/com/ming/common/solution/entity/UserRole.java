@@ -10,7 +10,7 @@ import java.util.Set;
 public enum UserRole {
     root,
     manager,
-    deveplor;
+    developer;
     /**
      * 就是可登录
      */
@@ -26,5 +26,19 @@ public enum UserRole {
         if (this == manager)
             return CollectionUtils.mutliSet(ROLE_USER, ROLE_MANAGE, "ROOT");
         return CollectionUtils.mutliSet(ROLE_USER);
+    }
+
+    @Override
+    public String toString() {
+        switch (this) {
+            case root:
+                return "build-in";
+            case manager:
+                return "管理员";
+            case developer:
+                return "开发人员";
+            default:
+                return "用户";
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.ming.common.solution.entity.User;
 import me.jiangcai.crud.controller.AbstractCrudController;
 import me.jiangcai.crud.row.FieldDefinition;
 import me.jiangcai.crud.row.RowCustom;
+import me.jiangcai.crud.row.field.FieldBuilder;
 import me.jiangcai.crud.row.field.Fields;
 import me.jiangcai.crud.row.supplier.AntDesignPaginationDramatizer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,13 @@ public class ManageLoginController extends AbstractCrudController<User, Long> {
     }
 
     @Override
+    protected void prepareRemove(User entity) {
+        super.prepareRemove(entity);
+        if ("root".equalsIgnoreCase(entity.getUsername()))
+            throw new IllegalArgumentException("root 是无法被删除的。");
+    }
+
+    @Override
     protected List<FieldDefinition<User>> listFields() {
         return Arrays.asList(
 //                FieldBuilder.asName(User.class, "loginName")
@@ -50,7 +58,9 @@ public class ManageLoginController extends AbstractCrudController<User, Long> {
 //                        .build(),
                 Fields.asBasic("id"),
                 Fields.asBasic("username"),
-                Fields.asBasic("role")
+                FieldBuilder.asName(User.class, "role")
+                        .addFormat((data, type) -> data.toString())
+                        .build()
         );
     }
 

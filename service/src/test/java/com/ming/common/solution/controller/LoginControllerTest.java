@@ -35,7 +35,7 @@ public class LoginControllerTest extends SpringWebTest {
         String username = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
 
-        loginService.newUser(username, password, UserRole.deveplor);
+        loginService.newUser(username, password, UserRole.developer);
 
         MockHttpSession session = (MockHttpSession) mockMvc.perform(
                 post("/login")

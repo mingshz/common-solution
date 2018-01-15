@@ -35,8 +35,8 @@ services:
       - mysql
   editor:
     image: d.lmjia.cn:5443/cs-api-editor:0.1
-    ports:
-      - 8080:8080
+#    ports:
+#      - 8080:8080
     networks:
       - cs-net
 

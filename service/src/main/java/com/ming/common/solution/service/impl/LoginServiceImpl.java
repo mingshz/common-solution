@@ -38,7 +38,7 @@ public class LoginServiceImpl implements LoginService {
         user.setEnabled(true);
         user.setUsername(name);
         user.setPassword(passwordEncoder.encode(rawPassword));
-        user.setRole(role == null ? UserRole.deveplor : role);
+        user.setRole(role == null ? UserRole.developer : role);
         return userRepository.save(user);
     }
 }

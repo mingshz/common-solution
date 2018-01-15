@@ -42,7 +42,7 @@ public class ManageLoginControllerTest extends SpringWebTest {
     @Test(expected = UsernameNotFoundException.class)
     public void delete() throws Exception {
         final String name = randomMobile();
-        User user = loginService.newUser(name, UUID.randomUUID().toString(), UserRole.deveplor);
+        User user = loginService.newUser(name, UUID.randomUUID().toString(), UserRole.developer);
 //        mockMvc.perform(
 //                post
 //        )

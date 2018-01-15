@@ -6,7 +6,7 @@
 
     <groupId>example</groupId>
     <artifactId>demo-builder</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
 
     <properties>
         <docker.push.registry>d.lmjia.cn:5443</docker.push.registry>

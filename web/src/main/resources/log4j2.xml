@@ -17,7 +17,7 @@
         </Console>
     </appenders>
     <loggers>
-        <logger name="org.springframework.web" level="debug"/>
+        <logger name="org.springframework.web" level="info"/>
 
         <logger name="org.springframework.web.context.support.StandardServletEnvironment" level="info"/>
         <logger name="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" level="info"/>
