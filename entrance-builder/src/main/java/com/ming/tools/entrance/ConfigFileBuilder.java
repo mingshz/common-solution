@@ -155,10 +155,19 @@ public class ConfigFileBuilder {
         if (endpoint.getPreBlock() != null)
             writeAll(endpoint.getPreBlock());
         if (isWebSocket)
+            // https://nginx.org/en/docs/http/websocket.html
+            // proxy_pass_request_headers      on;
             writeAll(String.format("\t\tproxy_pass http://%s%s;\n" +
                     "\t\tproxy_http_version 1.1;\n" +
-                    "\t\tproxy_set_header Upgrade $http_upgrade;\n" +
-                    "\t\tproxy_set_header Connection \"Upgrade\";\n", host, portSuffix));
+                            "\t\tproxy_set_header Upgrade $http_Upgrade;\n" +
+                            "\t\tproxy_set_header Connection \"Upgrade\";\n"
+                    , host, portSuffix));
+//            writeAll(String.format("\t\tproxy_pass http://%s%s;\n" +
+//                    "\t\tproxy_http_version 1.1;\n" +
+//                    "\t\tproxy_set_header        X-Real-IP $remote_addr;\n" +
+//                    "\t\tproxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;\n" +
+//                    "\t\tproxy_set_header        Host $http_host;\n"+
+//                    "\t\tproxy_pass_request_headers on;\n", host, portSuffix));
         else
             writeAll(String.format("\t\tproxy_pass http://%s%s;\n" +
                     "\t\tproxy_set_header        X-Real-IP $remote_addr;\n" +

@@ -26,10 +26,15 @@ public class ApiServer extends Endpoint implements Serializable {
     private String localApiFile;
     /**
      * 服务端地址
-     * 默认是 http://cs.ming.com
+     * 默认 csm.ming.com
      */
-    @Parameter(defaultValue = "http://cs.ming.com")
-    private String apiServerUrlPrefix = "http://cs.ming.com";
+    @Parameter(defaultValue = "csm.ming.com")
+    private String apiServerHost;
+    /**
+     * 是否使用安全协议
+     */
+    @Parameter
+    private boolean secure;
     /**
      * 项目id，它和{@link #localApiFile}其中一个必须被选择
      */

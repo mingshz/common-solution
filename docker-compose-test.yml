@@ -34,7 +34,7 @@ services:
     depends_on:
       - mysql
   editor:
-    image: d.lmjia.cn:5443/cs-api-editor:0.1
+    image: d.lmjia.cn:5443/cs-api-editor:1.1-SNAPSHOT
 #    ports:
 #      - 8080:8080
     networks:

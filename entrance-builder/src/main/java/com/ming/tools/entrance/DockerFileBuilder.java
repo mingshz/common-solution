@@ -45,7 +45,7 @@ public class DockerFileBuilder {
         try (OutputStreamWriter writer = new OutputStreamWriter(
                 new FileOutputStream(new File(workingDir, "Dockerfile")), Charset.forName("UTF-8"))) {
 
-            writer.write("FROM nginx\n");
+            writer.write("FROM nginx:1.13\n");
             writer.write("COPY default.conf /etc/nginx/conf.d/default.conf\n");
 
             if (entrance.isSsl()) {
