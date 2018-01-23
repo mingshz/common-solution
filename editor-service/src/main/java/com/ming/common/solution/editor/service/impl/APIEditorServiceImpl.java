@@ -26,6 +26,9 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static com.ming.common.solution.service.impl.FileProjectService.workWithLocalRepository;
 
@@ -40,6 +43,10 @@ public class APIEditorServiceImpl implements APIEditorService {
     private final List<WatchSession> sessionList = Collections.synchronizedList(new ArrayList<>());
     @Autowired
     private ProjectService projectService;
+    /**
+     * 负责将更新事件通知给webSocket客户端
+     */
+    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
 
     @Override
     public void onNewProject(NewProjectEvent event) {
@@ -117,10 +124,13 @@ public class APIEditorServiceImpl implements APIEditorService {
     }
 
     private void dispatchBranchUpdateEvent(Project project, String branch, String commitId) {
-        sessionList.removeIf(watchSession -> !watchSession.getSession().isOpen());
-        sessionList.stream()
-                .filter(watchSession -> watchSession.match(project, branch))
-                .forEach(watchSession -> watchSession.sendLastCommitId(commitId));
+        // 2秒后发布更新事件
+        executorService.schedule(() -> {
+            sessionList.removeIf(watchSession -> !watchSession.getSession().isOpen());
+            sessionList.stream()
+                    .filter(watchSession -> watchSession.match(project, branch))
+                    .forEach(watchSession -> watchSession.sendLastCommitId(commitId));
+        }, 1, TimeUnit.SECONDS);
     }
 
     @Override
