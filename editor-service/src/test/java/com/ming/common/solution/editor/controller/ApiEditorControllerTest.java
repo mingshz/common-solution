@@ -2,17 +2,24 @@ package com.ming.common.solution.editor.controller;
 
 import com.ming.common.solution.TestCoreConfig;
 import com.ming.common.solution.editor.EditorConfig;
+import com.ming.common.solution.entity.User;
+import com.ming.common.solution.entity.UserRole;
+import com.ming.common.solution.service.LoginService;
 import com.ming.common.solution.service.ProjectService;
 import me.jiangcai.lib.test.SpringWebTest;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.util.Collection;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -27,11 +34,55 @@ public class ApiEditorControllerTest extends SpringWebTest {
 
     @Autowired
     private ProjectService projectService;
+    @Autowired
+    private LoginService loginService;
+    private User current;
 
     @Before
     public void g() {
         projectService.deleteProject("demo");
         projectService.newProject("demo");
+        current = loginService.newUser(RandomStringUtils.randomAlphabetic(10), UUID.randomUUID().toString(), UserRole.root);
+    }
+
+    @Override
+    protected Authentication autoAuthentication() {
+        return new Authentication() {
+            @Override
+            public Collection<? extends GrantedAuthority> getAuthorities() {
+                return current.getAuthorities();
+            }
+
+            @Override
+            public Object getCredentials() {
+                return current;
+            }
+
+            @Override
+            public Object getDetails() {
+                return current;
+            }
+
+            @Override
+            public Object getPrincipal() {
+                return current;
+            }
+
+            @Override
+            public boolean isAuthenticated() {
+                return true;
+            }
+
+            @Override
+            public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+                throw new IllegalArgumentException();
+            }
+
+            @Override
+            public String getName() {
+                return current.getUsername();
+            }
+        };
     }
 
     @Test

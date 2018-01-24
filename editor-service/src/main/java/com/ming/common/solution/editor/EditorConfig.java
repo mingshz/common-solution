@@ -1,6 +1,7 @@
 package com.ming.common.solution.editor;
 
 import com.ming.common.solution.config.CoreConfig;
+import com.ming.common.solution.config.SecurityConfig;
 import com.ming.common.solution.editor.controller.EditorSocket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -18,7 +19,7 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
  * @author CJ
  */
 @Configuration
-@Import(CoreConfig.class)
+@Import(SecurityConfig.class)
 @ComponentScan({
         "com.ming.common.solution.editor.controller"
         , "com.ming.common.solution.editor.service"

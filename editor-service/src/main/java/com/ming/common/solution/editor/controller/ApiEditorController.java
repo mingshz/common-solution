@@ -2,6 +2,7 @@ package com.ming.common.solution.editor.controller;
 
 import com.ming.common.solution.Project;
 import com.ming.common.solution.editor.service.APIEditorService;
+import com.ming.common.solution.entity.User;
 import com.ming.common.solution.entity.UserRole;
 import com.ming.common.solution.service.ProjectService;
 import org.apache.commons.logging.Log;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -72,12 +74,12 @@ public class ApiEditorController {
     @PutMapping("/projectApiYaml/{id}/{branch}")
     @PreAuthorize("hasAnyRole('" + UserRole.ROLE_USER + "','ROOT')")
     public ResponseEntity<String> writeYaml(@PathVariable String id, @PathVariable String branch
-            , @RequestBody String api) {
+            , @RequestBody String api, @AuthenticationPrincipal User user) {
         Project project = projectService.byId(id);
         return ResponseEntity.ok()
                 .contentType(MediaType.TEXT_PLAIN)
                 .body(
-                        apiEditorService.writeAPI(project, branch, api)
+                        apiEditorService.writeAPI(user, project, branch, api)
                 );
     }
 

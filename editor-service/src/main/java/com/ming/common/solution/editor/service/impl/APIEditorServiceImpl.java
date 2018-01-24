@@ -3,6 +3,7 @@ package com.ming.common.solution.editor.service.impl;
 import com.ming.common.solution.Project;
 import com.ming.common.solution.editor.model.WatchSession;
 import com.ming.common.solution.editor.service.APIEditorService;
+import com.ming.common.solution.entity.User;
 import com.ming.common.solution.event.NewProjectEvent;
 import com.ming.common.solution.service.ProjectService;
 import com.ming.common.solution.service.impl.FileProjectService;
@@ -95,7 +96,8 @@ public class APIEditorServiceImpl implements APIEditorService {
     }
 
     @Override
-    public String writeAPI(Project project, String branch, String api) {
+    public String writeAPI(User user, Project project, String branch, String api) {
+        String comment = user == null ? "change the api via Editor." : user.getUsername() + " change the api via Editor.";
         workWithLocalRepository(project, (git, path) -> {
             try {
                 // checkout 到特定分支
@@ -104,7 +106,7 @@ public class APIEditorServiceImpl implements APIEditorService {
                 writeAPIFile(path, new ByteArrayInputStream(api.getBytes("UTF-8")));
                 git.add().addFilepattern(API_FILE_NAME).call();
                 git.commit()
-                        .setMessage("... change the api via Editor.")
+                        .setMessage(comment)
                         .call();
                 git.push()
                         .add(branchRef)

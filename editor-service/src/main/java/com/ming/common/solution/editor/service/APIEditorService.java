@@ -2,6 +2,7 @@ package com.ming.common.solution.editor.service;
 
 import com.ming.common.solution.Project;
 import com.ming.common.solution.editor.model.WatchSession;
+import com.ming.common.solution.entity.User;
 import com.ming.common.solution.event.NewProjectEvent;
 import org.springframework.context.event.EventListener;
 
@@ -20,12 +21,13 @@ public interface APIEditorService {
     String readAPI(Project project, String branch);
 
     /**
+     * @param user    谁干的
      * @param project 项目
      * @param branch  分支
      * @param api     api规格
      * @return 刚写入的commit id
      */
-    String writeAPI(Project project, String branch, String api);
+    String writeAPI(User user, Project project, String branch, String api);
 
     /**
      * 开始监听
