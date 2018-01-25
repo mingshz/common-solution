@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import static com.ming.common.solution.service.impl.FileProjectService.workWithLocalRepository;
@@ -47,7 +48,13 @@ public class APIEditorServiceImpl implements APIEditorService {
     /**
      * 负责将更新事件通知给webSocket客户端
      */
-    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
+    private final ScheduledExecutorService executorService
+            = Executors.newSingleThreadScheduledExecutor();
+    /**
+     * 守卫 {@link #executorService}
+     */
+    private final ScheduledExecutorService executorDaemonService
+            = Executors.newSingleThreadScheduledExecutor();
 
     @Override
     public void onNewProject(NewProjectEvent event) {
@@ -120,19 +127,31 @@ public class APIEditorServiceImpl implements APIEditorService {
         try {
             dispatchBranchUpdateEvent(project, branch, id);
         } catch (Throwable ex) {
-            log.warn("dispatch branch update event", ex);
+            log.warn("dispatch branch update event on schedule", ex);
         }
         return id;
     }
 
     private void dispatchBranchUpdateEvent(Project project, String branch, String commitId) {
         // 2秒后发布更新事件
-        executorService.schedule(() -> {
-            sessionList.removeIf(watchSession -> !watchSession.getSession().isOpen());
-            sessionList.stream()
-                    .filter(watchSession -> watchSession.match(project, branch))
-                    .forEach(watchSession -> watchSession.sendLastCommitId(commitId));
+        ScheduledFuture future = executorService.schedule(() -> {
+            try {
+                sessionList.removeIf(watchSession -> !watchSession.getSession().isOpen());
+                sessionList.stream()
+                        .filter(watchSession -> watchSession.match(project, branch))
+                        .forEach(watchSession -> watchSession.sendLastCommitId(commitId));
+            } catch (Throwable ex) {
+                log.warn("dispatch branch update event on run", ex);
+            }
         }, 1, TimeUnit.SECONDS);
+
+        executorDaemonService.schedule(() -> {
+            if (future.isDone()) {
+                return;
+            }
+            boolean status = future.cancel(true);
+            log.warn("cancel a timeout schedule: " + status);
+        }, 60, TimeUnit.SECONDS);
     }
 
     @Override
