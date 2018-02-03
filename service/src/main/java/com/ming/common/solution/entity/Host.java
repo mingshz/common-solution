@@ -18,12 +18,13 @@ import java.util.Objects;
 @Entity
 public class Host {
     @Id
-    @Column(length = 100)
+    @Column(length = 100, name = "id")
     private String host;
     /**
      * 服务器指纹
      */
     @Lob
+    @Column(name = "serverKey")
     private String key;
     private NetworkMode mode;
     /**
