@@ -7,6 +7,7 @@ import com.ming.common.solution.entity.*
 import com.ming.common.solution.repository.ImageRegisterRepository
 import com.ming.common.solution.service.DeployService
 import com.ming.common.solution.service.SimpleCipherService
+import org.apache.commons.logging.LogFactory
 import org.springframework.stereotype.Service
 import java.nio.charset.Charset
 import java.util.concurrent.TimeoutException
@@ -22,6 +23,7 @@ class DeployServiceImpl(
         , private val simpleCipherService: SimpleCipherService
         , private val entityManager: EntityManager
 ) : DeployService {
+    private val log = LogFactory.getLog(DeployServiceImpl::class.java)
 
     override fun findImage(region: String, namespace: String, name: String): ImageRegister? {
         return imageRegisterRepository.findByRegionAndNamespaceAndName(region, namespace, name)
@@ -30,6 +32,7 @@ class DeployServiceImpl(
     override fun imageUpdate(image: ImageRegister, version: String) {
         // 寻找该镜像关心的人
 //        RuntimeEnvironment.class
+        log.info("checking $version update for $image")
         val cb = entityManager.criteriaBuilder
         val cq = cb
                 .createQuery(
@@ -51,6 +54,7 @@ class DeployServiceImpl(
     }
 
     private fun imageUpdate(service: ProjectService, version: String, env: RuntimeEnvironment) {
+        log.info("${env.name} is updating ${service.name}")
         val loader = loadCH(env)
         val session = loader.getSession(env.managerHost.managerUser, env.managerHost.host)
 

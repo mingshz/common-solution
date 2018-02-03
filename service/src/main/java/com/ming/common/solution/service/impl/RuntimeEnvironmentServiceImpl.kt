@@ -5,9 +5,12 @@ import com.ming.common.solution.repository.HostRepository
 import com.ming.common.solution.repository.ProjectServiceRepository
 import com.ming.common.solution.repository.RuntimeEnvironmentRepository
 import com.ming.common.solution.service.RuntimeEnvironmentService
+import org.apache.commons.logging.LogFactory
 import org.springframework.stereotype.Service
 import org.springframework.util.StreamUtils
 import java.io.InputStream
+import java.nio.file.Files
+import java.nio.file.Paths
 
 /**
  * @author CJ
@@ -18,13 +21,34 @@ class RuntimeEnvironmentServiceImpl(
         , private val hostRepository: HostRepository
         , private val runtimeEnvironmentRepository: RuntimeEnvironmentRepository
 ) : RuntimeEnvironmentService {
+    private val log = LogFactory.getLog(RuntimeEnvironmentServiceImpl::class.java)
+    override fun addHosts(path: String) {
+        val home = Paths.get(path)
+        Files.list(home).forEach { name ->
+            run {
+                if (Files.isDirectory(name)) {
+                    val infoPath = name.resolve("info")
+                    val info = Files.readAllLines(infoPath)
+                    name.resolve("id_rsa").toFile().inputStream().use { s ->
+                        addHost(name.toFile().name, info[2], NetworkMode.valueOf(info[0]), info[1], s)
+                    }
+                }
+            }
+        }
+    }
+
+    override fun getHost(host: String): Host {
+        return hostRepository.getOne(host)
+    }
 
     override fun updateServiceVersion(env: RuntimeEnvironment, service: ProjectService, version: String) {
+        log.info("update service:${service.name} to $version in ${env.name}")
         env.targetVersion[service] = version
         runtimeEnvironmentRepository.save(env)
     }
 
     override fun addRuntimeEnvironment(host: Host, name: String, stackName: String): RuntimeEnvironment {
+        log.info("add stack $stackName for $name")
         val env = RuntimeEnvironment()
         env.managerHost = host
         env.stackName = stackName
@@ -36,6 +60,7 @@ class RuntimeEnvironmentServiceImpl(
     // 直接更新某些数据
     override fun addHost(hostName: String, rsaKey: String, mode: NetworkMode, username: String
                          , privateKey: InputStream, passPhrase: String): Host {
+        log.info("add or update host $hostName")
         var host = hostRepository.findOne(hostName)
         if (host == null) {
             host = Host()
@@ -53,6 +78,7 @@ class RuntimeEnvironmentServiceImpl(
     }
 
     override fun addService(image: ImageRegister, name: String): ProjectService {
+        log.info("add service $name for $image")
         val service = ProjectService()
         service.image = image
         service.name = name

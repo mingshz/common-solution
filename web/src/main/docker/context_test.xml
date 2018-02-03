@@ -8,6 +8,7 @@
 
     <!--保存项目的git目录-->
     <Parameter name="project.home" value="/var/projects"/>
+    <Parameter name="hosts.home" value="/var/csm/hosts"/>
     <!--系统的可访问URL-->
     <Parameter name="url" value="http://localhost"/>
 

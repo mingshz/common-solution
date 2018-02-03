@@ -40,4 +40,16 @@ interface RuntimeEnvironmentService {
     @Transactional
     fun updateServiceVersion(env: RuntimeEnvironment, service: ProjectService, version: String)
 
+    /**
+     * 从特定path下扫描把扫描到的内容都添加到系统中
+     */
+    @Transactional
+    fun addHosts(path: String)
+
+    /**
+     * 读取一个主机
+     */
+    @Transactional(readOnly = true)
+    fun getHost(host: String): Host
+
 }

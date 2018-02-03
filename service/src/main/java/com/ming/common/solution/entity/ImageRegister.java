@@ -1,7 +1,5 @@
 package com.ming.common.solution.entity;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,6 +48,11 @@ public class ImageRegister {
         return Objects.equals(region, that.region) &&
                 Objects.equals(namespace, that.namespace) &&
                 Objects.equals(name, that.name);
+    }
+
+    @Override
+    public String toString() {
+        return region + "." + namespace + "/" + name;
     }
 
     @Override

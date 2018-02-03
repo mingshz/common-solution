@@ -32,11 +32,13 @@ abstract class AbstractTest : SpringWebTest() {
                 , "Ilovemj1@docker"
         )
         val service = image?.let { runtimeEnvironmentService?.addService(it, "front") }
-        val host = runtimeEnvironmentService?.addHost(
-                "118.178.57.117"
-                , "AAAAB3NzaC1yc2EAAAADAQABAAABAQDetrqARBRXZL2gZbgja8uUg+kRc2quaNLhaZqLafrsn8OwyA1S8qlDoj5H9AfAlIoONjvzHr4Wm4j2fHHrgk1mwVHJ8BWFN4ZFBFduQ5C+Vz2+v5tBL29gt7S32rD36BgG4GD7WkSaLn0j2ECR/1PQPc+tvK0RrTNfH5KeWp9f85tqUbcYjvPZ2gFLpjQkLfW5Njfh1v3mkD3oQOlVZ+ltZZCrEO6r7Lcktz8DRsISo8o9rbFkEFqHtJoDOKUK8++/KgJ0O/07WcLoT8QtHpvI0ll28QwB0Py0K03snX4VDlcP0Lyo1jtk/iBUIjIWYlZ3hFiGQ5Rez/UgDupS1K2H"
-                , NetworkMode.classics, "demo", ClassPathResource("/id_rsa").inputStream
-        )
+        runtimeEnvironmentService?.addHosts(ClassPathResource("hosts").file.absolutePath)
+        val host = runtimeEnvironmentService?.getHost("118.178.57.117")
+//        val host = runtimeEnvironmentService?.addHost(
+//                "118.178.57.117"
+//                , "AAAAB3NzaC1yc2EAAAADAQABAAABAQDetrqARBRXZL2gZbgja8uUg+kRc2quaNLhaZqLafrsn8OwyA1S8qlDoj5H9AfAlIoONjvzHr4Wm4j2fHHrgk1mwVHJ8BWFN4ZFBFduQ5C+Vz2+v5tBL29gt7S32rD36BgG4GD7WkSaLn0j2ECR/1PQPc+tvK0RrTNfH5KeWp9f85tqUbcYjvPZ2gFLpjQkLfW5Njfh1v3mkD3oQOlVZ+ltZZCrEO6r7Lcktz8DRsISo8o9rbFkEFqHtJoDOKUK8++/KgJ0O/07WcLoT8QtHpvI0ll28QwB0Py0K03snX4VDlcP0Lyo1jtk/iBUIjIWYlZ3hFiGQ5Rez/UgDupS1K2H"
+//                , NetworkMode.classics, "demo", ClassPathResource("/hosts/118.178.57.117/id_rsa").inputStream
+//        )
 
         val env = host?.let {
             runtimeEnvironmentService?.addRuntimeEnvironment(
