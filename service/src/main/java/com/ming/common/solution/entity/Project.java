@@ -8,6 +8,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.OneToMany;
+import java.util.Set;
 
 /**
  * @author CJ
@@ -31,4 +33,9 @@ public class Project implements CrudFriendly<String> {
      */
     @Column(length = 100)
     private String avatar;
+
+    @OneToMany
+    private Set<ProjectService> imageSet;
+    @OneToMany
+    private Set<RuntimeEnvironment> environments;
 }
