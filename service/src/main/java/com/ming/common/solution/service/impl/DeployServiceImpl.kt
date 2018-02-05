@@ -67,7 +67,7 @@ class DeployServiceImpl(
             // 执行 docker pull
             execSession(session, "docker pull $registerHost/${service.image.namespace}/${service.image.name}:$version")
             // 执行 docker image
-            execSession(session, "docker service update --image $registerHost/${service.image.namespace}/${service.image.name}:$version ${env.stackName}_${service.name}")
+            execSession(session, "docker service update --force --image $registerHost/${service.image.namespace}/${service.image.name}:$version ${env.stackName}_${service.name}")
         } finally {
             session.disconnect()
         }
