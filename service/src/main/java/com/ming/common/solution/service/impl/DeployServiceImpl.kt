@@ -82,12 +82,12 @@ class DeployServiceImpl(
                 outputStream.write("$rawPassword\n".toByteArray(Charset.forName("ASCII")))
                 outputStream.flush()
             }
-        }, 10)
+        }, 30)
     }
 
 
     private fun execSession(session: Session, command: String, working: Consumer<ChannelExec>? = null
-                            , timeOut: Int = 30) {
+                            , timeOut: Int = 5 * 60) {
         val channel: ChannelExec = session.openChannel("exec") as ChannelExec
         channel.setPty(true)
         channel.setCommand(command)
