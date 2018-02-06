@@ -67,7 +67,9 @@ class DeployServiceImpl(
             // 执行 docker pull
             execSession(session, "docker pull $registerHost/${service.image.namespace}/${service.image.name}:$version")
             // 执行 docker image
-            execSession(session, "docker service update --force --image $registerHost/${service.image.namespace}/${service.image.name}:$version ${env.stackName}_${service.name}")
+//            execSession(session, "docker service update --force --image $registerHost/${service.image.namespace}/${service.image.name}:$version ${env.stackName}_${service.name}")
+            // 执行 docker stop `docker ps|grep sb_test_manager|awk '{print $1}'`
+            execSession(session, "docker stop `docker ps|grep ${env.stackName}_${service.name}|awk '{print \$1}'`", null, 7 * 60)
         } finally {
             session.disconnect()
         }

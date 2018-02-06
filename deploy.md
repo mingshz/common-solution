@@ -15,3 +15,9 @@ editor
 other  
 
 export 80
+
+
+删除所有已关闭的容器
+docker rm `docker ps -a|grep Exited|awk '{print $1}'`
+删除所有未标记的镜像
+docker rmi `docker image ls|grep '<none>'|awk '{print $3}'`
