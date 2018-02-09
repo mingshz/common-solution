@@ -1,6 +1,7 @@
 package com.ming.common.solution.controller;
 
 import com.ming.common.solution.entity.User;
+import com.ming.common.solution.model.UserCreation;
 import me.jiangcai.crud.controller.AbstractCrudController;
 import me.jiangcai.crud.row.FieldDefinition;
 import me.jiangcai.crud.row.RowCustom;
@@ -12,6 +13,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.context.request.WebRequest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,15 +25,19 @@ import java.util.Map;
 @Controller
 @RequestMapping("/users")
 @RowCustom(dramatizer = AntDesignPaginationDramatizer.class, distinct = true)
-public class ManageLoginController extends AbstractCrudController<User, Long> {
+public class ManageLoginController extends AbstractCrudController<User, Long, UserCreation> {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
-    protected void preparePersist(User data, Map<String, Object> otherData) {
-        super.preparePersist(data, otherData);
-        data.setPassword(passwordEncoder.encode((CharSequence) otherData.get("rawPassword")));
-        data.setEnabled(true);
+    protected User preparePersist(UserCreation data, WebRequest otherData) {
+//        super.preparePersist(data, otherData);
+        User user = new User();
+        user.setUsername(data.getUsername());
+        user.setRole(data.getRole());
+        user.setEnabled(true);
+        user.setPassword(passwordEncoder.encode(data.getRawPassword()));
+        return user;
     }
 
     @Override

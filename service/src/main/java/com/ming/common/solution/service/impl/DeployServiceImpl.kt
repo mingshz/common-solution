@@ -10,6 +10,7 @@ import com.ming.common.solution.service.SimpleCipherService
 import org.apache.commons.logging.LogFactory
 import org.springframework.stereotype.Service
 import java.nio.charset.Charset
+import java.util.concurrent.Executor
 import java.util.concurrent.TimeoutException
 import java.util.function.Consumer
 import javax.persistence.EntityManager
@@ -22,6 +23,7 @@ class DeployServiceImpl(
         private val imageRegisterRepository: ImageRegisterRepository
         , private val simpleCipherService: SimpleCipherService
         , private val entityManager: EntityManager
+        , private val taskExecutorService: Executor
 ) : DeployService {
     private val log = LogFactory.getLog(DeployServiceImpl::class.java)
 
@@ -54,24 +56,26 @@ class DeployServiceImpl(
     }
 
     private fun imageUpdate(service: ProjectService, version: String, env: RuntimeEnvironment) {
-        log.info("${env.name} is updating ${service.name}")
-        val loader = loadCH(env)
-        val session = loader.getSession(env.managerHost.managerUser, env.managerHost.host)
+        taskExecutorService.execute {
+            log.info("${env.name} is updating ${service.name}")
+            val loader = loadCH(env)
+            val session = loader.getSession(env.managerHost.managerUser, env.managerHost.host)
 
-        session.connect()
+            session.connect()
 
-        try {
-            val registerHost = service.image.toHostName(env.managerHost.mode)
-            // 执行 docker login
-            loginDocker(session, registerHost, service.image)
-            // 执行 docker pull
-            execSession(session, "docker pull $registerHost/${service.image.namespace}/${service.image.name}:$version")
-            // 执行 docker image
-            execSession(session, "docker service update --force --image $registerHost/${service.image.namespace}/${service.image.name}:$version ${env.stackName}_${service.name}")
-            // 执行 docker stop `docker ps|grep sb_test_manager|awk '{print $1}'`
-            execSession(session, "docker stop `docker ps|grep ${env.stackName}_${service.name}|awk '{print \$1}'`", null, 7 * 60)
-        } finally {
-            session.disconnect()
+            try {
+                val registerHost = service.image.toHostName(env.managerHost.mode)
+                // 执行 docker login
+                loginDocker(session, registerHost, service.image)
+                // 执行 docker pull
+                execSession(session, "docker pull $registerHost/${service.image.namespace}/${service.image.name}:$version")
+                // 执行 docker image
+                execSession(session, "docker service update --force --image $registerHost/${service.image.namespace}/${service.image.name}:$version ${env.stackName}_${service.name}")
+                // 执行 docker stop `docker ps|grep sb_test_manager|awk '{print $1}'`
+                execSession(session, "docker stop `docker ps|grep ${env.stackName}_${service.name}|awk '{print \$1}'`", null, 7 * 60)
+            } finally {
+                session.disconnect()
+            }
         }
     }
 

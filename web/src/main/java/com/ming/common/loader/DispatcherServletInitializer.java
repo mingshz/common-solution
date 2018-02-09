@@ -2,7 +2,6 @@ package com.ming.common.loader;
 
 import com.ming.common.solution.config.SecurityConfig;
 import com.ming.common.solution.editor.EditorConfig;
-import me.jiangcai.crud.filter.MultiReadSupportFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
@@ -31,7 +30,7 @@ public class DispatcherServletInitializer extends AbstractAnnotationConfigDispat
 
     @Override
     protected Filter[] getServletFilters() {
-        return new Filter[]{new CharacterEncodingFilter("utf-8"), new MultiReadSupportFilter()};
+        return new Filter[]{new CharacterEncodingFilter("utf-8")};
     }
 
 

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.context.request.WebRequest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("/projects")
 //@RowCustom(distinct = true, dramatizer = AntDesignPaginationDramatizer.class)
-public class ManageProjectController extends AbstractCrudController<Project, String> {
+public class ManageProjectController extends AbstractCrudController<Project, String, Project> {
 
     @Autowired
     private SystemService systemService;
@@ -32,7 +33,7 @@ public class ManageProjectController extends AbstractCrudController<Project, Str
     private ProjectService projectService;
 
     @Override
-    protected void preparePersist(Project data, Map<String, Object> otherData) {
+    protected Project preparePersist(Project data, WebRequest otherData) {
         super.preparePersist(data, otherData);
         // 先检查下有没有啊
         try {
@@ -43,6 +44,7 @@ public class ManageProjectController extends AbstractCrudController<Project, Str
         }
         if (data.getBranch() == null)
             data.setBranch("master");
+        return data;
     }
 
     @Override
