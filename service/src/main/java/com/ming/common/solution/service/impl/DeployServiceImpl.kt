@@ -7,12 +7,20 @@ import com.ming.common.solution.entity.*
 import com.ming.common.solution.repository.ImageRegisterRepository
 import com.ming.common.solution.service.DeployService
 import com.ming.common.solution.service.SimpleCipherService
+import me.jiangcai.lib.notice.Content
+import me.jiangcai.lib.notice.NoticeService
+import me.jiangcai.lib.notice.To
+import me.jiangcai.lib.notice.email.EmailAddress
 import org.apache.commons.logging.LogFactory
 import org.springframework.stereotype.Service
+import org.springframework.util.StringUtils
 import java.nio.charset.Charset
+import java.util.*
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeoutException
 import java.util.function.Consumer
+import java.util.stream.Collectors
+import javax.activation.DataSource
 import javax.persistence.EntityManager
 
 /**
@@ -24,6 +32,7 @@ class DeployServiceImpl(
         , private val simpleCipherService: SimpleCipherService
         , private val entityManager: EntityManager
         , private val taskExecutorService: Executor
+        , private val noticeService: NoticeService
 ) : DeployService {
     private val log = LogFactory.getLog(DeployServiceImpl::class.java)
 
@@ -75,6 +84,65 @@ class DeployServiceImpl(
                 execSession(session, "docker stop `docker ps|grep ${env.stackName}_${service.name}|awk '{print \$1}'`", null, 7 * 60)
             } finally {
                 session.disconnect()
+            }
+
+            val project = env.project
+            // 通知相关人士
+            // xx的xx环境更新即将完成
+            // 项目:xx的xx环境中的xx服务即将完成更新
+            // 然后附加这个环境的介绍
+            val content = object : Content {
+                override fun signName(): String {
+                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                }
+
+                override fun asHtml(attachmentRefs: MutableMap<String, String>?): String {
+                    val h1 = "<h1>${project.id}的${env.name}环境即将完成更新</h1>"
+                    val p1 = "<p>${project.description}</p>"
+                    val h2 = "<h2>更新内容:${service.name}</h2>"
+                    val p2 = "<p>${env.richDescription}</p>"
+                    return h1 + p1 + h2 + p2
+                }
+
+                override fun embedAttachments(): MutableList<DataSource> = Collections.emptyList()
+
+                override fun templateName(): String {
+                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                }
+
+                override fun asText(): String {
+                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                }
+
+                override fun asTitle(): String = "${project.id}的${env.name}环境更新即将完成"
+
+                override fun templateParameters(): MutableMap<String, *> {
+                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                }
+
+                override fun otherAttachments(): MutableList<DataSource> = Collections.emptyList()
+            }
+
+            try {
+                val targetEmail = project.relates.stream()
+                        .filter { !StringUtils.isEmpty(it.emailAddress) }
+                        .map { EmailAddress(it.username, it.emailAddress) }
+                        .collect(Collectors.toSet())
+                if (targetEmail.isEmpty())
+                    return@execute
+                noticeService.send("me.jiangcai.lib.notice.EmailNoticeSupplier", object : To {
+                    override fun mobilePhone(): String {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+
+                    override fun emailTo(): MutableSet<EmailAddress> {
+                        return targetEmail
+                    }
+
+                }, content)
+
+            } catch (e: Exception) {
+                log.warn("通知时错误", e)
             }
         }
     }

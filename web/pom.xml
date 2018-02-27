@@ -24,6 +24,12 @@
             <version>${javaee.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>me.jiangcai.lib.notice</groupId>
+            <artifactId>notice-supplier-email</artifactId>
+            <version>4.0</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -42,7 +48,17 @@
                     <name>cs-proxy</name>
                     <routers>
                         <router>
-                            <serverName>localhost</serverName>
+                            <serverName>mysql.*</serverName>
+                            <staticServers>
+                                <staticServer>
+                                    <host>mysqlAdmin</host>
+                                    <port>80</port>
+                                    <locationUri>/</locationUri>
+                                </staticServer>
+                            </staticServers>
+                        </router>
+                        <router>
+                            <serverName>csm.lmjia.cn</serverName>
                             <apiServers>
                                 <server>
                                     <host>server</host>

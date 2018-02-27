@@ -15,7 +15,7 @@ interface RuntimeEnvironmentService {
      * 就这个镜像添加一个服务
      */
     @Transactional
-    fun addService(image: ImageRegister, name: String): ProjectService
+    fun addService(project: Project, image: ImageRegister, name: String): ProjectService
 
     /**
      * 添加hostKEY
@@ -35,7 +35,7 @@ interface RuntimeEnvironmentService {
      * @param stackName stack name
      */
     @Transactional
-    fun addRuntimeEnvironment(host: Host, name: String, stackName: String): RuntimeEnvironment
+    fun addRuntimeEnvironment(project: Project, host: Host, name: String, stackName: String): RuntimeEnvironment
 
     @Transactional
     fun updateServiceVersion(env: RuntimeEnvironment, service: ProjectService, version: String)

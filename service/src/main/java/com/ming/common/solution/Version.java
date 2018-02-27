@@ -5,5 +5,6 @@ package com.ming.common.solution;
  */
 public enum Version {
     init,
-    addP1
+    addP1,
+    email,
 }

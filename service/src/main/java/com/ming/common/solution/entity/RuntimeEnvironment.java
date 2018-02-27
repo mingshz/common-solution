@@ -1,8 +1,5 @@
 package com.ming.common.solution.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -38,6 +35,8 @@ public class RuntimeEnvironment {
      */
     @ManyToOne
     private Host managerHost;
+    @ManyToOne
+    private Project project;
 
 
     public ProjectService watchService(ImageRegister imageRegister) {
@@ -92,5 +91,13 @@ public class RuntimeEnvironment {
 
     public void setManagerHost(Host managerHost) {
         this.managerHost = managerHost;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 }

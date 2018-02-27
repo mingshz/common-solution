@@ -1,7 +1,9 @@
 package com.ming.common.solution.service.impl;
 
 import com.ming.common.solution.Project;
+import com.ming.common.solution.entity.User;
 import com.ming.common.solution.event.NewProjectEvent;
+import com.ming.common.solution.repository.ProjectRepository;
 import com.ming.common.solution.service.ProjectService;
 import com.ming.common.solution.service.file.FileProject;
 import org.apache.commons.logging.Log;
@@ -23,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -41,6 +44,8 @@ public class FileProjectService implements ProjectService {
     private final Path home;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
+    @Autowired
+    private ProjectRepository projectRepository;
 
     public FileProjectService(Environment environment) throws IOException {
         // 默认就是在 target/home
@@ -154,6 +159,18 @@ public class FileProjectService implements ProjectService {
     }
 
     @Override
+    public com.ming.common.solution.entity.Project newProject(String id, String description, String branch
+            , String avatar) {
+        newProject(id);
+        com.ming.common.solution.entity.Project project = new com.ming.common.solution.entity.Project();
+        project.setId(id);
+        project.setBranch(branch);
+        project.setAvatar(avatar);
+        project.setDescription(description);
+        return projectRepository.save(project);
+    }
+
+    @Override
     public Project newProject(String id) {
         if (projectStream().anyMatch(project -> project.getId().equals(id))) {
             throw new IllegalArgumentException(id + "is really existing.");
@@ -212,6 +229,14 @@ public class FileProjectService implements ProjectService {
             }
             return null;
         }));
+    }
+
+    @Override
+    public void addRelate(com.ming.common.solution.entity.Project project, User user) {
+        if (project.getRelates() == null)
+            project.setRelates(new HashSet<>());
+        project.getRelates().add(user);
+        projectRepository.save(project);
     }
 
     @Override

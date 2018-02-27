@@ -2,14 +2,18 @@ package com.ming.common.solution
 
 import com.ming.common.solution.config.SecurityConfig
 import com.ming.common.solution.entity.ImageRegister
-import com.ming.common.solution.entity.NetworkMode
+import com.ming.common.solution.entity.User
+import com.ming.common.solution.entity.UserRole
+import com.ming.common.solution.repository.UserRepository
 import com.ming.common.solution.service.ImageService
+import com.ming.common.solution.service.ProjectService
 import com.ming.common.solution.service.RuntimeEnvironmentService
 import me.jiangcai.lib.test.SpringWebTest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.ClassPathResource
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.web.WebAppConfiguration
+import java.util.*
 
 /**
  * @author CJ
@@ -21,28 +25,39 @@ abstract class AbstractTest : SpringWebTest() {
     private var imageService: ImageService? = null
     @Autowired
     private var runtimeEnvironmentService: RuntimeEnvironmentService? = null
+    @Autowired
+    private lateinit var projectService: ProjectService
+    @Autowired
+    private lateinit var userRepository: UserRepository
 
     /**
      * 建立一个模拟环境 允许自动跟踪shopping-beauty-client
      */
     protected fun createDemoEnv(): ImageRegister {
+        val project = projectService.newProject(UUID.randomUUID().toString().substring(0, 30), null
+                , "master", null)
+
+        // 增加一个相关人士 就我自己吧
+        var user = User()
+        user.isEnabled = true
+        user.role = UserRole.root
+        user.username = UUID.randomUUID().toString()
+        user.emailAddress = "caijiang@mingshz.com"
+        user = userRepository.save(user)
+
+        projectService.addRelate(project, user)
 
         val image = imageService?.addImage(
                 "cn-shanghai", "mingshz", "shopping-beauty-client", "CJ@mingshz"
                 , "Ilovemj1@docker"
         )
-        val service = image?.let { runtimeEnvironmentService?.addService(it, "front") }
+        val service = image?.let { runtimeEnvironmentService?.addService(project, it, "front") }
         runtimeEnvironmentService?.addHosts(ClassPathResource("hosts").file.absolutePath)
         val host = runtimeEnvironmentService?.getHost("118.178.57.117")
-//        val host = runtimeEnvironmentService?.addHost(
-//                "118.178.57.117"
-//                , "AAAAB3NzaC1yc2EAAAADAQABAAABAQDetrqARBRXZL2gZbgja8uUg+kRc2quaNLhaZqLafrsn8OwyA1S8qlDoj5H9AfAlIoONjvzHr4Wm4j2fHHrgk1mwVHJ8BWFN4ZFBFduQ5C+Vz2+v5tBL29gt7S32rD36BgG4GD7WkSaLn0j2ECR/1PQPc+tvK0RrTNfH5KeWp9f85tqUbcYjvPZ2gFLpjQkLfW5Njfh1v3mkD3oQOlVZ+ltZZCrEO6r7Lcktz8DRsISo8o9rbFkEFqHtJoDOKUK8++/KgJ0O/07WcLoT8QtHpvI0ll28QwB0Py0K03snX4VDlcP0Lyo1jtk/iBUIjIWYlZ3hFiGQ5Rez/UgDupS1K2H"
-//                , NetworkMode.classics, "demo", ClassPathResource("/hosts/118.178.57.117/id_rsa").inputStream
-//        )
 
         val env = host?.let {
             runtimeEnvironmentService?.addRuntimeEnvironment(
-                    it, "测试", "sb_test"
+                    project, it, "测试", "sb_test"
             )
         }
         env?.let { service?.let { it1 -> runtimeEnvironmentService?.updateServiceVersion(it, it1, "latest") } }

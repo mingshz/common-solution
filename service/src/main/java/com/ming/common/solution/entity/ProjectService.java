@@ -1,8 +1,5 @@
 package com.ming.common.solution.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,6 +25,8 @@ public class ProjectService {
      */
     @ManyToOne
     private ImageRegister image;
+    @ManyToOne
+    private Project project;
 
     public Long getId() {
         return id;
@@ -51,5 +50,13 @@ public class ProjectService {
 
     public void setImage(ImageRegister image) {
         this.image = image;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 }

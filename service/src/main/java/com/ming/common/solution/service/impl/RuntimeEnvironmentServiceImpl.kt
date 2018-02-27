@@ -47,13 +47,14 @@ class RuntimeEnvironmentServiceImpl(
         runtimeEnvironmentRepository.save(env)
     }
 
-    override fun addRuntimeEnvironment(host: Host, name: String, stackName: String): RuntimeEnvironment {
+    override fun addRuntimeEnvironment(project: Project, host: Host, name: String, stackName: String): RuntimeEnvironment {
         log.info("add stack $stackName for $name")
         val env = RuntimeEnvironment()
         env.managerHost = host
         env.stackName = stackName
         env.name = name
         env.targetVersion = HashMap()
+        env.project = project
         return runtimeEnvironmentRepository.save(env)
     }
 
@@ -77,11 +78,12 @@ class RuntimeEnvironmentServiceImpl(
         return hostRepository.save(host)
     }
 
-    override fun addService(image: ImageRegister, name: String): ProjectService {
+    override fun addService(project: Project, image: ImageRegister, name: String): ProjectService {
         log.info("add service $name for $image")
         val service = ProjectService()
         service.image = image
         service.name = name
+        service.project = project
         return projectServiceRepository.save(service)
     }
 

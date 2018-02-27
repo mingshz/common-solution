@@ -3,6 +3,7 @@ package com.ming.common.solution.config;
 import com.ming.common.solution.Version;
 import me.jiangcai.crud.CrudConfig;
 import me.jiangcai.lib.jdbc.JdbcSpringConfig;
+import me.jiangcai.lib.notice.NoticeSpringConfig;
 import me.jiangcai.lib.resource.web.WebResourceSpringConfig;
 import me.jiangcai.lib.spring.logging.LoggingConfig;
 import me.jiangcai.lib.sys.SystemStringConfig;
@@ -37,6 +38,7 @@ import java.util.concurrent.Executors;
 @EnableTransactionManagement(mode = AdviceMode.PROXY)
 @EnableAspectJAutoProxy
 @Import({UpgradeSpringConfig.class, JdbcSpringConfig.class, LoggingConfig.class
+        , NoticeSpringConfig.class
         , WebResourceSpringConfig.class
         , SystemStringConfig.class, CrudConfig.class})
 public class CoreConfig {

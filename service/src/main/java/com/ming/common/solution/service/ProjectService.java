@@ -1,6 +1,9 @@
 package com.ming.common.solution.service;
 
 import com.ming.common.solution.Project;
+import com.ming.common.solution.entity.User;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Stream;
 
@@ -23,6 +26,16 @@ public interface ProjectService {
      * @return 新增项目
      */
     Project newProject(String id);
+
+    /**
+     * @param id          项目id
+     * @param description 描述
+     * @param branch      分支
+     * @param avatar      图像
+     * @return 新增一个项目
+     */
+    @Transactional
+    com.ming.common.solution.entity.Project newProject(String id, String description, String branch, String avatar);
 
     void deleteProject(String id);
 
@@ -52,4 +65,7 @@ public interface ProjectService {
      * @param toBranch   新分支名称
      */
     void newBranch(String id, String fromBranch, String toBranch);
+
+    @Transactional
+    void addRelate(com.ming.common.solution.entity.Project project, User user);
 }
