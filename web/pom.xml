@@ -58,7 +58,7 @@
                             </staticServers>
                         </router>
                         <router>
-                            <serverName>csm.lmjia.cn</serverName>
+                            <serverName>csm.lmjia.cn localhost</serverName>
                             <apiServers>
                                 <server>
                                     <host>server</host>
