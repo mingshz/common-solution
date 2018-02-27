@@ -9,5 +9,15 @@
 <p>abcdefg项目介绍</p>
 <h2>更新内容:YY</h2>
 <p>富文本说明</p>
+<h3>部署主机:127.0.0.1</h3>
+<p>
+    可以通过以下指令查看环境运行概要:
+<blockquote>
+    docker stack ps sb_test
+</blockquote>
+或者通过以下指令跟随查看更新内容的日志:
+<blockquote>
+    docker logs -f `docker ps|grep sb_test_server|awk '{print $1}'`
+</blockquote>
 </body>
 </html>

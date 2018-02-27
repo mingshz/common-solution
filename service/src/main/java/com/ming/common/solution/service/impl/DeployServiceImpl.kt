@@ -97,11 +97,32 @@ class DeployServiceImpl(
                 }
 
                 override fun asHtml(attachmentRefs: MutableMap<String, String>?): String {
-                    val h1 = "<h1>${project.id}的${env.name}环境即将完成更新</h1>"
-                    val p1 = "<p>${project.description}</p>"
-                    val h2 = "<h2>更新内容:${service.name}</h2>"
-                    val p2 = "<p>${env.richDescription}</p>"
-                    return h1 + p1 + h2 + p2
+                    val p1 = """
+<h1>${project.id}的${env.name}环境即将完成更新</h1>
+<p>${project.description}</p>
+<h2>更新内容:${service.name}</h2>
+<p>${env.richDescription}</p>
+"""
+                    val h3 = if (env.managerHost != null) {
+                        "<h3>管理主机:${env.managerHost.host}</h3>"
+                    } else {
+                        ""
+                    }
+                    val p3 = if (env.stackName != null) {
+                        """<p>
+    可以通过以下指令查看环境运行概要:
+<blockquote>
+    docker stack ps ${env.stackName}
+</blockquote>
+    或者通过以下指令跟随查看更新内容的日志:
+<blockquote>
+    docker logs -f `docker ps|grep ${env.stackName}_${service.name}|awk '{print ${'$'}1}'`
+</blockquote>
+"""
+                    } else {
+                        ""
+                    }
+                    return p1 + h3 + p3
                 }
 
                 override fun embedAttachments(): MutableList<DataSource> = Collections.emptyList()
