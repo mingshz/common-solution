@@ -1,5 +1,6 @@
 package com.ming.common.solution.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import me.jiangcai.crud.CrudFriendly;
@@ -32,13 +33,16 @@ public class Project implements CrudFriendly<String> {
     @Column(length = 100)
     private String avatar;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "project")
     private Set<ProjectService> imageSet;
+    @JsonIgnore
     @OneToMany(mappedBy = "project")
     private Set<RuntimeEnvironment> environments;
     /**
      * 项目相关人
      */
+    @JsonIgnore
     @OneToMany
     private Set<User> relates;
 
