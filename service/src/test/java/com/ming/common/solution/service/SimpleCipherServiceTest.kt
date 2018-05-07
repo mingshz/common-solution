@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.codec.Hex
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.web.WebAppConfiguration
+import org.springframework.util.StreamUtils
+import java.io.FileOutputStream
 import java.util.*
 import javax.crypto.KeyGenerator
 
@@ -19,18 +21,28 @@ import javax.crypto.KeyGenerator
 @WebAppConfiguration
 class SimpleCipherServiceTest : SpringWebTest() {
     @Autowired
-    private val simpleCipherService: SimpleCipherService? = null
+    private lateinit var simpleCipherService: SimpleCipherService
 
     @Test
     fun go() {
         val data = UUID.randomUUID().toString()
-        val after = simpleCipherService?.encrypt(data)
+        val after = simpleCipherService.encrypt(data)
         assertThat(
-                simpleCipherService?.decrypt2String(after!!)
+                simpleCipherService.decrypt2String(after)
         ).isEqualTo(data)
 
         val kg = KeyGenerator.getInstance("DES")
         val key = kg.generateKey()
         println(Hex.encode(key.encoded))
+    }
+
+    @Test
+    fun toFile() {
+        val out = FileOutputStream("./target/x.bin")
+        out.use {
+            StreamUtils.copy(simpleCipherService.encrypt("plain"), it)
+            it.flush()
+        }
+
     }
 }
