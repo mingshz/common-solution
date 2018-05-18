@@ -71,6 +71,7 @@ class DeployServiceImpl(
             val session = loader.getSession(env.managerHost.managerUser, env.managerHost.host)
 
             session.connect()
+            var ex: Exception? = null
 
             try {
                 val registerHost = service.image.toHostName(env.managerHost.mode)
@@ -82,9 +83,13 @@ class DeployServiceImpl(
                 execSession(session, "docker service update --force --image $registerHost/${service.image.namespace}/${service.image.name}:$version ${env.stackName}_${service.name}")
                 // 执行 docker stop `docker ps|grep sb_test_manager|awk '{print $1}'`
                 execSession(session, "docker stop `docker ps|grep ${env.stackName}_${service.name}|awk '{print \$1}'`", null, 7 * 60)
+            } catch (e: Exception) {
+                ex = e
             } finally {
                 session.disconnect()
             }
+
+            // 无论如何邮件都是要发的
 
             val project = env.project
             // 通知相关人士
@@ -97,12 +102,30 @@ class DeployServiceImpl(
                 }
 
                 override fun asHtml(attachmentRefs: MutableMap<String, String>?): String {
+                    if (ex != null) {
+                        return failedMessage()
+                    }
+                    return successMessage()
+                }
+
+                private fun failedMessage(): String {
+                    return """
+                <h1>${project.id}的${env.name}环境更新失败</h1>
+                <p>${project.description}</p>
+                <h2>更新内容:${service.name}</h2>
+                <p>${env.richDescription}</p>
+                <h2>失败原因:</h2>
+                <p>${ex?.localizedMessage}</p>
+                """
+                }
+
+                private fun successMessage(): String {
                     val p1 = """
-<h1>${project.id}的${env.name}环境即将完成更新</h1>
-<p>${project.description}</p>
-<h2>更新内容:${service.name}</h2>
-<p>${env.richDescription}</p>
-"""
+                <h1>${project.id}的${env.name}环境即将完成更新</h1>
+                <p>${project.description}</p>
+                <h2>更新内容:${service.name}</h2>
+                <p>${env.richDescription}</p>
+                """
                     val h3 = if (env.managerHost != null) {
                         "<h3>管理主机:${env.managerHost.host}</h3>"
                     } else {
@@ -110,15 +133,15 @@ class DeployServiceImpl(
                     }
                     val p3 = if (env.stackName != null) {
                         """<p>
-    可以通过以下指令查看环境运行概要:
-<blockquote>
-    docker stack ps ${env.stackName}
-</blockquote>
-    或者通过以下指令跟随查看更新内容的日志:
-<blockquote>
-    docker logs -f `docker ps|grep ${env.stackName}_${service.name}|awk '{print ${'$'}1}'`
-</blockquote>
-"""
+                    可以通过以下指令查看环境运行概要:
+                <blockquote>
+                    docker stack ps ${env.stackName}
+                </blockquote>
+                    或者通过以下指令跟随查看更新内容的日志:
+                <blockquote>
+                    docker logs -f `docker ps|grep ${env.stackName}_${service.name}|awk '{print ${'$'}1}'`
+                </blockquote>
+                """
                     } else {
                         ""
                     }
@@ -164,6 +187,9 @@ class DeployServiceImpl(
 
             } catch (e: Exception) {
                 log.warn("通知时错误", e)
+            }
+            if (ex != null) {
+                throw ex
             }
         }
     }
