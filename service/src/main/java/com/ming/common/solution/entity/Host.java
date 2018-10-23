@@ -20,6 +20,7 @@ public class Host {
     @Id
     @Column(length = 100, name = "id")
     private String host;
+    private int port = 22;
     /**
      * 服务器指纹
      */
@@ -61,6 +62,14 @@ public class Host {
 
     public void setHost(String host) {
         this.host = host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
     public String getKey() {

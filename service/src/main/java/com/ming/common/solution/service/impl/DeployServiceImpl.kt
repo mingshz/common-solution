@@ -68,7 +68,7 @@ class DeployServiceImpl(
         taskExecutorService.execute {
             log.info("${env.name} is updating ${service.name}")
             val loader = loadCH(env)
-            val session = loader.getSession(env.managerHost.managerUser, env.managerHost.host)
+            val session = loader.getSession(env.managerHost.managerUser, env.managerHost.host, env.managerHost.port)
 
             session.connect()
             var ex: Exception? = null
