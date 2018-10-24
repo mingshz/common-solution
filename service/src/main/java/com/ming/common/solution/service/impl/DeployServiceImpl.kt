@@ -70,6 +70,10 @@ class DeployServiceImpl(
             val loader = loadCH(env)
             val session = loader.getSession(env.managerHost.managerUser, env.managerHost.host, env.managerHost.port)
 
+            if (!env.managerHost.isStrictHostKeyChecking) {
+                session.setConfig("StrictHostKeyChecking", "no")
+            }
+
             session.connect()
             var ex: Exception? = null
 

@@ -21,6 +21,11 @@ public class Host {
     @Column(length = 100, name = "id")
     private String host;
     private int port = 22;
+
+    /**
+     * 是否采用严格服务器检查
+     */
+    private boolean strictHostKeyChecking = true;
     /**
      * 服务器指纹
      */
@@ -70,6 +75,14 @@ public class Host {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public boolean isStrictHostKeyChecking() {
+        return strictHostKeyChecking;
+    }
+
+    public void setStrictHostKeyChecking(boolean strictHostKeyChecking) {
+        this.strictHostKeyChecking = strictHostKeyChecking;
     }
 
     public String getKey() {
