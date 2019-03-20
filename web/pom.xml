@@ -5,7 +5,7 @@
     <parent>
         <artifactId>common-solution</artifactId>
         <groupId>com.ming.common.solution</groupId>
-        <version>1.8-SNAPSHOT</version>
+        <version>1.9-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -46,6 +46,7 @@
                 <version>1.0</version>
                 <configuration>
                     <name>cs-proxy</name>
+                    <pushRegistry>registry.cn-shanghai.aliyuncs.com/mingshz</pushRegistry>
                     <routers>
                         <router>
                             <serverName>mysql.*</serverName>
@@ -108,10 +109,10 @@
                 <version>0.23.0</version>
                 <configuration>
                     <verbose>true</verbose>
-                    <registry>d.lmjia.cn:5443</registry>
+                    <registry>registry.cn-shanghai.aliyuncs.com</registry>
                     <images>
                         <image>
-                            <name>cs-server</name>
+                            <name>mingshz/cs-server</name>
                             <build>
                                 <from>single-app-tomcat:1.0-SNAPSHOT</from>
                                 <tags>
