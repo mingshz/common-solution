@@ -1,6 +1,7 @@
 package com.ming.common.solution.service;
 
 import com.ming.common.solution.Version;
+import com.ming.common.solution.entity.AuditTarget;
 import com.ming.common.solution.entity.User;
 import com.ming.common.solution.entity.UserRole;
 import me.jiangcai.lib.jdbc.JdbcService;
@@ -87,6 +88,10 @@ public class InitService {
                                 }
                             }
                         });
+                        break;
+                    case auditTime:
+                        jdbcService.tableAlterAddColumn(AuditTarget.class, "fingerPrintType", null);
+                        jdbcService.tableAlterAddColumn(AuditTarget.class, "lastVisitTime", null);
                         break;
                     default:
                 }

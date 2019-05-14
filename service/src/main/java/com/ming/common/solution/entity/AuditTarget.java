@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * @author CJ
@@ -32,10 +33,18 @@ public class AuditTarget {
     @Column(length = 300)
     private String fingerPrint;
     /**
+     * 可信任指纹类型
+     */
+    @Column(length = 100)
+    private String fingerPrintType;
+    /**
      * 主机
      */
     @Column(length = 15)
     private String host;
+
+    @Column(columnDefinition = "datetime")
+    private LocalDateTime lastVisitTime = LocalDateTime.now();
 
     public BigDecimal getRefuseRate() {
         return refuseRate;
@@ -75,5 +84,21 @@ public class AuditTarget {
 
     public void setHost(String host) {
         this.host = host;
+    }
+
+    public String getFingerPrintType() {
+        return fingerPrintType;
+    }
+
+    public void setFingerPrintType(String fingerPrintType) {
+        this.fingerPrintType = fingerPrintType;
+    }
+
+    public LocalDateTime getLastVisitTime() {
+        return lastVisitTime;
+    }
+
+    public void setLastVisitTime(LocalDateTime lastVisitTime) {
+        this.lastVisitTime = lastVisitTime;
     }
 }
