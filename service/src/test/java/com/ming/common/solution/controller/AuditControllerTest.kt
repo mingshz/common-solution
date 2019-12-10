@@ -63,7 +63,7 @@ class AuditControllerTest : SpringWebTest() {
                         .param("fingerPrint", finger2)
         )
                 .andExpect(status().isOk)
-                .andExpect(content().string("0.2"))
+                .andExpect(content().string(AuditController.IllegalRefuseRate))
 
         // 但是可以确保之前的继续ok
         mockMvc.perform(

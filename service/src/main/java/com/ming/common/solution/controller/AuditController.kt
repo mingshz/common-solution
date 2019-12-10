@@ -20,6 +20,10 @@ class AuditController(
         private val auditTargetRepository: AuditTargetRepository
 ) {
 
+    companion object {
+        const val IllegalRefuseRate = "0"
+    }
+
     @PostMapping("/public/threadSafe")
     @ResponseBody
     fun forProject(request: HttpServletRequest, @RequestParam name: String, @RequestParam fingerPrint: String, @RequestParam fingerPrintType: String): BigDecimal {
@@ -57,7 +61,7 @@ class AuditController(
     }
 
     private fun illegalFingerVisitResult(audit: AuditTarget): BigDecimal {
-        audit.refuseRate = BigDecimal("0.2")
+        audit.refuseRate = BigDecimal(IllegalRefuseRate)
         auditTargetRepository.save(audit)
         return audit.refuseRate
     }
