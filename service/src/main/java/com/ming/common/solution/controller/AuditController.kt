@@ -25,9 +25,11 @@ class AuditController(
     fun forProject(request: HttpServletRequest, @RequestParam name: String, @RequestParam fingerPrint: String, @RequestParam fingerPrintType: String): BigDecimal {
 
         @Suppress("WhenWithOnlyElse", "UNUSED_EXPRESSION") val fp = when (fingerPrintType) {
+            "/etc/ssh/ssh_host_ecdsa_key.pub" ->
+                fingerPrint.split(" ").subList(0, 2).joinToString(" ")
             else -> {
                 // /etc/ssh/ssh_host_ecdsa_key.pub
-                fingerPrint.split(" ").subList(0, 2).joinToString(" ")
+                fingerPrint
             }
         }
         // /etc/ssh/ssh_host_ecdsa_key.pub
