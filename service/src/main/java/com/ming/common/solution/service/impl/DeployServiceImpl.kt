@@ -7,11 +7,11 @@ import com.ming.common.solution.entity.*
 import com.ming.common.solution.repository.ImageRegisterRepository
 import com.ming.common.solution.service.DeployService
 import com.ming.common.solution.service.SimpleCipherService
-import me.jiangcai.lib.notice.Content
-import me.jiangcai.lib.notice.NoticeService
-import me.jiangcai.lib.notice.To
+import me.jiangcai.lib.notice.*
 import me.jiangcai.lib.notice.email.EmailAddress
 import org.apache.commons.logging.LogFactory
+import org.springframework.context.ApplicationContext
+import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
 import java.nio.charset.Charset
@@ -28,16 +28,20 @@ import javax.persistence.EntityManager
  */
 @Service
 class DeployServiceImpl(
-        private val imageRegisterRepository: ImageRegisterRepository
-        , private val simpleCipherService: SimpleCipherService
-        , private val entityManager: EntityManager
-        , private val taskExecutorService: Executor
-        , private val noticeService: NoticeService
+        private val environment: Environment,
+        private val applicationContext: ApplicationContext,
+        private val imageRegisterRepository: ImageRegisterRepository,
+        private val simpleCipherService: SimpleCipherService,
+        @Suppress("SpringJavaInjectionPointsAutowiringInspection")
+        private val entityManager: EntityManager,
+        private val taskExecutorService: Executor,
+        private val noticeService: NoticeService
 ) : DeployService {
     private val log = LogFactory.getLog(DeployServiceImpl::class.java)
 
-    override fun findImage(region: String, namespace: String, name: String): ImageRegister? {
+    override fun findImage(region: String?, namespace: String, name: String): ImageRegister? {
         return imageRegisterRepository.findByRegionAndNamespaceAndName(region, namespace, name)
+                ?: imageRegisterRepository.findByNamespaceAndName(namespace, name)
     }
 
     override fun imageUpdate(image: ImageRegister, version: String) {
@@ -80,14 +84,23 @@ class DeployServiceImpl(
             try {
                 val registerHost = service.image.toHostName(env.managerHost.mode)
                 // 执行 docker login
-                loginDocker(session, registerHost, service.image)
+                registerHost?.let {
+                    log.info("remote executing:docker login")
+                    // 如果是有区域的 那一般表示私有的…………哈哈
+                    loginDocker(session, it, service.image)
+                }
+                val registerPrefix = if (registerHost == null) "" else "$registerHost/"
                 // 执行 docker pull
-                execSession(session, "docker pull $registerHost/${service.image.namespace}/${service.image.name}:$version")
+                log.info("remote executing:docker pull ${registerPrefix}${service.image.namespace}/${service.image.name}:$version")
+                execSession(session, "docker pull ${registerPrefix}${service.image.namespace}/${service.image.name}:$version")
                 // 执行 docker image
-                execSession(session, "docker service update --force --image $registerHost/${service.image.namespace}/${service.image.name}:$version ${env.stackName}_${service.name}")
+                log.info("remote executing:docker service update --force --image ${registerPrefix}${service.image.namespace}/${service.image.name}:$version ${env.stackName}_${service.name}")
+                execSession(session, "docker service update --force --image ${registerPrefix}${service.image.namespace}/${service.image.name}:$version ${env.stackName}_${service.name}")
                 // 执行 docker stop `docker ps|grep sb_test_manager|awk '{print $1}'`
+                log.info("remote executing:docker stop `docker ps|grep ${env.stackName}_${service.name}|awk '{print \$1}'`")
                 execSession(session, "docker stop `docker ps|grep ${env.stackName}_${service.name}|awk '{print \$1}'`", null, 7 * 60)
             } catch (e: Exception) {
+                log.warn("remote", e)
                 ex = e
             } finally {
                 session.disconnect()
@@ -178,7 +191,32 @@ class DeployServiceImpl(
                         .collect(Collectors.toSet())
                 if (targetEmail.isEmpty())
                     return@execute
-                noticeService.send("me.jiangcai.lib.notice.EmailNoticeSupplier", object : To {
+                noticeService.send({
+                    try {
+                        // 把它需要的属性给整出来。
+                        val ps = Properties()
+                        ps.addFromEnvironment(environment, "smtp.host")
+                        ps.addFromEnvironment(environment, "smtp.sslPort")
+                        ps.addFromEnvironment(environment, "smtp.port")
+                        ps.addFromEnvironment(environment, "smtp.username")
+                        ps.addFromEnvironment(environment, "smtp.password")
+                        ps.addFromEnvironment(environment, "from.name")
+                        ps.addFromEnvironment(environment, "from.email")
+
+                        applicationContext.getBean(EmailNoticeSupplier::class.java, ps)
+                    } catch (e: Throwable) {
+                        object : NoticeSupplier {
+                            override fun statusReport() {
+                                TODO("Not yet implemented")
+                            }
+
+                            override fun send(to: To?, content: Content?) {
+                                log.warn("send message use NOOP.")
+                            }
+
+                        }
+                    }
+                }, object : To {
                     override fun mobilePhone(): String {
                         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                     }
@@ -251,5 +289,11 @@ class DeployServiceImpl(
         loader.addIdentity("", env.managerHost.managerPrivateKeyData, null, env.managerHost.managerPassPhrase?.toByteArray())
 
         return loader
+    }
+}
+
+private fun Properties.addFromEnvironment(environment: Environment, key: String) {
+    environment.getProperty(key)?.let {
+        put(key, it)
     }
 }

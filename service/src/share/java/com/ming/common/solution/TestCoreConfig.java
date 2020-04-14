@@ -36,7 +36,7 @@ public class TestCoreConfig extends H2DataSourceConfig {
 
             @Nullable
             @Override
-            public ImageRegister findImage(@NotNull String region, @NotNull String namespace, @NotNull String name) {
+            public ImageRegister findImage(String region, @NotNull String namespace, @NotNull String name) {
                 return applicationContext.getBean(ImageRegisterRepository.class).findByRegionAndNamespaceAndName(region, namespace, name);
             }
         };

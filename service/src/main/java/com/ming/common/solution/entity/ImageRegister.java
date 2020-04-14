@@ -61,8 +61,9 @@ public class ImageRegister {
         return Objects.hash(region, namespace, name);
     }
 
-    @NotNull
     public String toHostName(@Nullable NetworkMode mode) {
+        if (region == null)
+            return null;
         StringBuilder sb = new StringBuilder("registry");
         if (mode != null) {
             switch (mode) {

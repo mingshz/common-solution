@@ -24,12 +24,6 @@
             <version>${javaee.version}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>me.jiangcai.lib.notice</groupId>
-            <artifactId>notice-supplier-email</artifactId>
-            <version>4.0.1</version>
-            <scope>runtime</scope>
-        </dependency>
     </dependencies>
 
     <build>

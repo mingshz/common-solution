@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface ImageRegisterRepository extends JpaRepository<ImageRegister, Long> {
     ImageRegister findByRegionAndNamespaceAndName(String region, String namespace, String name);
+
+    ImageRegister findByNamespaceAndName(String namespace, String name);
 }

@@ -18,6 +18,6 @@ interface DeployService {
      * 寻找镜像
      */
     @Transactional(readOnly = true)
-    fun findImage(region: String, namespace: String, name: String): ImageRegister?
+    fun findImage(region: String?, namespace: String, name: String): ImageRegister?
 
 }
